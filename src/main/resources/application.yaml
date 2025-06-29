@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: files-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${FILES_SERVICE_DATASOURCE_URL}
+    username: ${FILES_SERVICE_DATASOURCE_USERNAME}
+    password: ${FILES_SERVICE_DATASOURCE_PASSWORD}
+#  liquibase:
+#    change-log: classpath:/db/changelog/db.changelog-master.yaml
+  jackson:
+    default-property-inclusion: NON_NULL
+server:
+  servlet:
+    context-path: /api/v1
+  port: 9021
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL}
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 10
+    initial-instance-info-replication-interval-seconds: 10
+    instance-info-replication-interval-seconds: 10
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
