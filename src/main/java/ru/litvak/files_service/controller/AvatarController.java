@@ -1,6 +1,7 @@
 package ru.litvak.files_service.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,13 @@ public class AvatarController {
         return avatarService.loadAvatar(userId, size);
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<byte[]> loadOwnerAvatar(@RequestHeader(value = "Authorization") String authHeader,
+                                                  @RequestParam(required = false, defaultValue = "MEDIUM") SizeType size) {
+        return avatarService.loadAvatar(authHeader, size);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadAvatar(@RequestHeader(value = "Authorization") String authHeader,
                              @RequestParam("file") MultipartFile file) {

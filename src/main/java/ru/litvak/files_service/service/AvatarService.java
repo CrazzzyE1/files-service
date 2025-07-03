@@ -11,4 +11,6 @@ public interface AvatarService {
     ResponseEntity<byte[]> loadAvatar(UUID userId, SizeType size);
 
     void saveAvatar(String authHeader, MultipartFile file);
+
+    ResponseEntity<byte[]> loadAvatar(String authHeader, SizeType size);
 }

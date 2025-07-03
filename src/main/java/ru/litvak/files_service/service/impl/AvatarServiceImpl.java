@@ -52,6 +52,12 @@ public class AvatarServiceImpl implements AvatarService {
         }
     }
 
+    @Override
+    public ResponseEntity<byte[]> loadAvatar(String authHeader, SizeType size) {
+        UUID me = JwtTokenMapper.getUserId(authHeader);
+        return loadAvatar(me, size);
+    }
+
     private String generateName(String baseName, SizeType sizeType) {
         return String.format("%s_%s", baseName, sizeType.name().toLowerCase());
     }
