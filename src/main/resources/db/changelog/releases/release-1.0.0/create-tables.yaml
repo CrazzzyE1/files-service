@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-avatars-table
+      author: ilitvak
+      changes:
+        - createTable:
+            tableName: avatars
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: uploaded_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: size
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - createSequence:
+            sequenceName: avatars_seq
+            startValue: 1
+            incrementBy: 1

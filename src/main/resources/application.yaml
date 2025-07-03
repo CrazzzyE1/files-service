@@ -6,8 +6,8 @@ spring:
     url: ${FILES_SERVICE_DATASOURCE_URL}
     username: ${FILES_SERVICE_DATASOURCE_USERNAME}
     password: ${FILES_SERVICE_DATASOURCE_PASSWORD}
-#  liquibase:
-#    change-log: classpath:/db/changelog/db.changelog-master.yaml
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
   jackson:
     default-property-inclusion: NON_NULL
 server:
@@ -28,6 +28,10 @@ eureka:
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 10
+minio:
+  endpoint: ${MINIO_URL}
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}
 
 management:
   endpoints:
