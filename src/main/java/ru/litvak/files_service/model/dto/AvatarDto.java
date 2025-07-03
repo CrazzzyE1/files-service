@@ -14,7 +14,6 @@ public class AvatarDto {
     private UUID userId;
     private String fileName;
     private String contentType;
-    private String s3Key;
     private Instant uploadedAt;
     private SizeType size;
 }
