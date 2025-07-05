@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_pictures_table
+      author: ilitvak
+      changes:
+        - createTable:
+            tableName: pictures
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_id
+                  type: varchar(255)
+              - column:
+                  name: content_type
+                  type: varchar(255)
+              - column:
+                  name: uploaded_at
+                  type: timestamp

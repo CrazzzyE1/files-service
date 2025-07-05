@@ -1,6 +1,7 @@
 package ru.litvak.files_service.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,15 @@ import ru.litvak.files_service.util.JwtTokenMapper;
 
 import java.util.UUID;
 
+import static ru.litvak.files_service.util.SupportUtil.generateName;
+
 @Service
 @RequiredArgsConstructor
 public class AvatarServiceImpl implements AvatarService {
 
-    private static final String AVATARS_BUCKET_NAME = "avatars";
+    @Value("${minio.bucket.name.avatars}")
+    private String bucket;
+
     private static final String DEFAULT_AVATAR_NAME = "default_avatar";
     private static final String DEFAULT_CONTENT_TYPE = "image/png";
 
@@ -34,9 +39,9 @@ public class AvatarServiceImpl implements AvatarService {
     public ResponseEntity<byte[]> loadAvatar(UUID userId, SizeType size) {
         AvatarDto meta = avatarMapper.toDto(avatarManager.get(userId));
         String fileName = meta != null ?
-                generateName(String.valueOf(meta.getUserId()), size) : generateName(DEFAULT_AVATAR_NAME, size);
+                generateName(String.valueOf(userId), size) : generateName(DEFAULT_AVATAR_NAME, size);
         String contentType = meta != null ? meta.getContentType() : DEFAULT_CONTENT_TYPE;
-        byte[] data = s3Manager.get(fileName, AVATARS_BUCKET_NAME);
+        byte[] data = s3Manager.get(fileName, bucket);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(data);
@@ -49,7 +54,7 @@ public class AvatarServiceImpl implements AvatarService {
         avatarManager.save(userId, file.getContentType());
         for (SizeType size : SizeType.values()) {
             String fileName = generateName(String.valueOf(userId), size);
-            s3Manager.save(fileName, AVATARS_BUCKET_NAME, fileResolutionConverter.convert(file, size));
+            s3Manager.save(fileName, bucket, fileResolutionConverter.convert(file, size));
         }
     }
 
@@ -65,12 +70,8 @@ public class AvatarServiceImpl implements AvatarService {
         UUID me = JwtTokenMapper.getUserId(authHeader);
         for (SizeType size : SizeType.values()) {
             String fileName = generateName(String.valueOf(me), size);
-            s3Manager.delete(fileName, AVATARS_BUCKET_NAME);
+            s3Manager.delete(fileName, bucket);
         }
         avatarManager.delete(me);
-    }
-
-    private String generateName(String baseName, SizeType sizeType) {
-        return String.format("%s_%s", baseName, sizeType.name().toLowerCase());
     }
 }
