@@ -36,4 +36,10 @@ public class AvatarController {
                              @RequestParam("file") MultipartFile file) {
         avatarService.saveAvatar(authHeader, file);
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping
+    public void deleteAvatar(@RequestHeader(value = "Authorization") String authHeader) {
+        avatarService.deleteAvatar(authHeader);
+    }
 }

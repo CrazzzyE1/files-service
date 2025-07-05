@@ -18,11 +18,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: file_name
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
                   name: content_type
                   type: varchar(255)
                   constraints:
@@ -30,11 +25,6 @@ databaseChangeLog:
               - column:
                   name: uploaded_at
                   type: timestamp
-                  constraints:
-                    nullable: false
-              - column:
-                  name: size
-                  type: varchar(50)
                   constraints:
                     nullable: false
         - createSequence:
