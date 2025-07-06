@@ -41,7 +41,7 @@ public class PictureServiceImpl implements PictureService {
     public ResponseEntity<byte[]> getGiftPicture(String authHeader, String giftId, SizeType size) {
         UUID me = JwtTokenMapper.getUserId(authHeader);
         PictureDto dto = pictureMapper.toDto(pictureManager.get(giftId));
-        boolean access = accessManager.checkImageAccess(me, giftId);
+        boolean access = accessManager.readPictureAccess(me, giftId);
         if (!access) {
             log.warn("Access denied");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -57,7 +57,7 @@ public class PictureServiceImpl implements PictureService {
     @Transactional
     public void addPicture(String authHeader, String giftId, MultipartFile file) {
         UUID me = JwtTokenMapper.getUserId(authHeader);
-        boolean access = accessManager.checkImageAccess(me, giftId);
+        boolean access = accessManager.writePictureAccess(me, giftId);
         if (!access) {
             log.warn("Add picture. Access denied.");
             return;
