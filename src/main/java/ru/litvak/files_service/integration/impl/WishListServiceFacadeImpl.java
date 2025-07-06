@@ -18,7 +18,7 @@ public class WishListServiceFacadeImpl implements WishListServiceFacade {
     @Override
     public GiftInfoDto getGiftInfo(String giftId) {
         return restTemplate.getForObject(
-                "/api/v1/gifts/{id}/info",
+                "http://WISHLIST-SERVICE/api/v1/gifts/{id}/info",
                 GiftInfoDto.class,
                 giftId
         );

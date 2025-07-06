@@ -21,7 +21,7 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
     @Override
     public RelationsDto getRelations(UUID me, UUID userId) {
         return restTemplate.postForObject(
-                "/api/v1/profiles/relations",
+                "http://USER-SERVICE/api/v1/profiles/relations",
                 new RelationRequest(me, userId),
                 RelationsDto.class
         );
