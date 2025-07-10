@@ -24,11 +24,9 @@ public class PictureConverterImpl implements PictureConverter {
     @Override
     public MultipartFile resize(MultipartFile originalFile, SizeType size) {
         try {
-            // Проверка входных параметров
             Objects.requireNonNull(originalFile, "Original file cannot be null");
             Objects.requireNonNull(size, "Size type cannot be null");
 
-            // Проверка формата файла
             String contentType = originalFile.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
                 throw new IllegalArgumentException("Only image files are supported");
