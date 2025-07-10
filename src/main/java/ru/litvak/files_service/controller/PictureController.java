@@ -32,4 +32,10 @@ public class PictureController {
         validateContentType(file.getContentType());
         pictureService.addPicture(authHeader, giftId, file);
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/gift/{giftId}")
+    public void deletePicture(@RequestHeader(value = "Authorization") String authHeader, @PathVariable String giftId) {
+        pictureService.deletePicture(authHeader, giftId);
+    }
 }

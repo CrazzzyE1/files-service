@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import ru.litvak.files_service.enumerated.SizeType;
 import ru.litvak.files_service.manager.AccessManager;
 import ru.litvak.files_service.manager.PictureConverter;
@@ -47,7 +48,7 @@ public class PictureServiceImpl implements PictureService {
         boolean access = accessManager.readPictureAccess(me, giftId);
         if (!access) {
             log.warn("Access denied");
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
         String fileName = meta != null ?
@@ -67,12 +68,28 @@ public class PictureServiceImpl implements PictureService {
         boolean access = accessManager.writePictureAccess(me, giftId);
         if (!access) {
             log.warn("Add picture. Access denied.");
-            return;
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         pictureManager.save(me, DEFAULT_CONTENT_TYPE, giftId);
         for (SizeType size : SizeType.values()) {
             String fileName = generateName(String.valueOf(giftId), size);
             s3Manager.save(fileName, bucket, pictureConverter.resize(file, size));
         }
+    }
+
+    @Override
+    @Transactional
+    public void deletePicture(String authHeader, String giftId) {
+        UUID me = JwtTokenMapper.getUserId(authHeader);
+        boolean access = accessManager.writePictureAccess(me, giftId);
+        if (!access) {
+            log.warn("Delete picture. Access denied.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        for (SizeType size : SizeType.values()) {
+            String fileName = generateName(String.valueOf(giftId), size);
+            s3Manager.delete(fileName, bucket);
+        }
+        pictureManager.delete(giftId);
     }
 }

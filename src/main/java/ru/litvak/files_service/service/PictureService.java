@@ -8,4 +8,6 @@ public interface PictureService {
     ResponseEntity<byte[]> getGiftPicture(String authHeader, String giftId, SizeType size);
 
     void addPicture(String authHeader, String giftId, MultipartFile file);
+
+    void deletePicture(String authHeader, String giftId);
 }

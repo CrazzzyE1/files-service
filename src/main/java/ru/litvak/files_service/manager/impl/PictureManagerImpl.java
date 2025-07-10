@@ -45,4 +45,9 @@ public class PictureManagerImpl implements PictureManager {
                 );
         pictureRepository.save(picture);
     }
+
+    @Override
+    public void delete(String id) {
+        pictureRepository.deleteByFileId(id);
+    }
 }
