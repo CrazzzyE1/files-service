@@ -18,6 +18,7 @@ import ru.litvak.files_service.util.JwtTokenMapper;
 
 import java.util.UUID;
 
+import static ru.litvak.files_service.util.SupportUtil.DEFAULT_CONTENT_TYPE;
 import static ru.litvak.files_service.util.SupportUtil.generateName;
 
 @Service
@@ -28,7 +29,6 @@ public class AvatarServiceImpl implements AvatarService {
     private String bucket;
 
     private static final String DEFAULT_AVATAR_NAME = "default_avatar";
-    private static final String DEFAULT_CONTENT_TYPE = "image/png";
 
     private final AvatarManager avatarManager;
     private final S3Manager s3Manager;

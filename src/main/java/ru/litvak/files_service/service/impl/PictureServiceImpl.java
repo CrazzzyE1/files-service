@@ -21,6 +21,7 @@ import ru.litvak.files_service.util.JwtTokenMapper;
 
 import java.util.UUID;
 
+import static ru.litvak.files_service.util.SupportUtil.DEFAULT_CONTENT_TYPE;
 import static ru.litvak.files_service.util.SupportUtil.generateName;
 
 @Slf4j
@@ -31,6 +32,8 @@ public class PictureServiceImpl implements PictureService {
     @Value("${minio.bucket.name.pictures}")
     private String bucket;
 
+    private static final String DEFAULT_PICTURE_NAME = "default_picture";
+
     private final PictureManager pictureManager;
     private final PictureMapper pictureMapper;
     private final AccessManager accessManager;
@@ -40,16 +43,20 @@ public class PictureServiceImpl implements PictureService {
     @Override
     public ResponseEntity<byte[]> getGiftPicture(String authHeader, String giftId, SizeType size) {
         UUID me = JwtTokenMapper.getUserId(authHeader);
-        PictureDto dto = pictureMapper.toDto(pictureManager.get(giftId));
+        PictureDto meta = pictureMapper.toDto(pictureManager.get(giftId));
         boolean access = accessManager.readPictureAccess(me, giftId);
         if (!access) {
             log.warn("Access denied");
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        byte[] data = s3Manager.get(generateName(String.valueOf(giftId), size), bucket);
+        String fileName = meta != null ?
+                generateName(String.valueOf(giftId), size) : generateName(DEFAULT_PICTURE_NAME, size);
+        String contentType = meta != null ? meta.getContentType() : DEFAULT_CONTENT_TYPE;
+
+        byte[] data = s3Manager.get(fileName, bucket);
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(dto.getContentType()))
+                .contentType(MediaType.parseMediaType(contentType))
                 .body(data);
     }
 

@@ -1,15 +1,17 @@
 package ru.litvak.files_service.manager.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.litvak.files_service.exception.NotFoundException;
 import ru.litvak.files_service.manager.PictureManager;
 import ru.litvak.files_service.model.entity.Picture;
 import ru.litvak.files_service.repository.PictureRepository;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PictureManagerImpl implements PictureManager {
@@ -18,8 +20,12 @@ public class PictureManagerImpl implements PictureManager {
 
     @Override
     public Picture get(String giftId) {
-        return pictureRepository.findByFileId(giftId)
-                .orElseThrow(() -> new NotFoundException("Picture with id: %s not found.".formatted(giftId)));
+        Optional<Picture> optionalPicture = pictureRepository.findByFileId(giftId);
+        if (optionalPicture.isEmpty()) {
+            log.info("Picture for gift with id {} not found.", giftId);
+            return null;
+        }
+        return optionalPicture.get();
     }
 
     @Override
