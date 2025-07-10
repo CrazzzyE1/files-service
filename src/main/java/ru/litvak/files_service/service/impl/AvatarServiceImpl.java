@@ -51,7 +51,7 @@ public class AvatarServiceImpl implements AvatarService {
     @Transactional
     public void saveAvatar(String authHeader, MultipartFile file) {
         UUID userId = JwtTokenMapper.getUserId(authHeader);
-        avatarManager.save(userId, file.getContentType());
+        avatarManager.save(userId, DEFAULT_CONTENT_TYPE);
         for (SizeType size : SizeType.values()) {
             String fileName = generateName(String.valueOf(userId), size);
             s3Manager.save(fileName, bucket, pictureConverter.resize(file, size));

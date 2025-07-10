@@ -7,8 +7,6 @@ import ru.litvak.files_service.enumerated.SizeType;
 import ru.litvak.files_service.manager.PictureConverter;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -40,16 +38,7 @@ public class PictureConverterImpl implements PictureConverter {
             BufferedImage resizedImage = resizeImage(originalImage, size);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-            String formatName = getFormatName(contentType);
-            if ("webp".equalsIgnoreCase(formatName)) {
-                ImageWriter writer = ImageIO.getImageWritersByMIMEType("image/webp").next();
-                try (ImageOutputStream ios = ImageIO.createImageOutputStream(os)) {
-                    writer.setOutput(ios);
-                    writer.write(resizedImage);
-                }
-            } else {
-                ImageIO.write(resizedImage, formatName, os);
-            }
+            ImageIO.write(resizedImage, "jpeg", os);
 
             byte[] imageBytes = os.toByteArray();
 
@@ -61,15 +50,6 @@ public class PictureConverterImpl implements PictureConverter {
 
                 @Override
                 public String getOriginalFilename() {
-                    if ("webp".equalsIgnoreCase(formatName)) {
-                        String name = originalFile.getOriginalFilename();
-                        if (name != null) {
-                            int dotIndex = name.lastIndexOf('.');
-                            if (dotIndex > 0) {
-                                return name.substring(0, dotIndex) + ".webp";
-                            }
-                        }
-                    }
                     return originalFile.getOriginalFilename();
                 }
 
@@ -144,18 +124,5 @@ public class PictureConverterImpl implements PictureConverter {
         graphics2D.dispose();
 
         return outputImage;
-    }
-
-    private String getFormatName(String contentType) {
-        if (contentType == null) {
-            throw new IllegalArgumentException("Content type cannot be null");
-        }
-
-        return switch (contentType.toLowerCase()) {
-            case "image/jpeg", "image/jpg" -> "jpeg";
-            case "image/png" -> "png";
-            case "image/webp" -> "webp";
-            default -> throw new IllegalArgumentException("Unsupported image format: " + contentType);
-        };
     }
 }
