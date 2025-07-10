@@ -11,6 +11,8 @@ import ru.litvak.files_service.service.AvatarService;
 
 import java.util.UUID;
 
+import static ru.litvak.files_service.util.FileValidatorUtil.validateContentType;
+
 @RestController
 @RequestMapping("/avatars")
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class AvatarController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadAvatar(@RequestHeader(value = "Authorization") String authHeader,
                              @RequestParam("file") MultipartFile file) {
+        validateContentType(file.getContentType());
         avatarService.saveAvatar(authHeader, file);
     }
 

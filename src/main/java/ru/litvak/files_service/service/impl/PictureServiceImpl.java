@@ -11,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.litvak.files_service.enumerated.SizeType;
 import ru.litvak.files_service.manager.AccessManager;
+import ru.litvak.files_service.manager.PictureConverter;
 import ru.litvak.files_service.manager.PictureManager;
 import ru.litvak.files_service.manager.S3Manager;
 import ru.litvak.files_service.mapper.PictureMapper;
 import ru.litvak.files_service.model.dto.PictureDto;
-import ru.litvak.files_service.service.FileResolutionConverter;
 import ru.litvak.files_service.service.PictureService;
 import ru.litvak.files_service.util.JwtTokenMapper;
 
@@ -38,7 +38,7 @@ public class PictureServiceImpl implements PictureService {
     private final PictureMapper pictureMapper;
     private final AccessManager accessManager;
     private final S3Manager s3Manager;
-    private final FileResolutionConverter fileResolutionConverter;
+    private final PictureConverter pictureConverter;
 
     @Override
     public ResponseEntity<byte[]> getGiftPicture(String authHeader, String giftId, SizeType size) {
@@ -72,7 +72,7 @@ public class PictureServiceImpl implements PictureService {
         pictureManager.save(me, file.getContentType(), giftId);
         for (SizeType size : SizeType.values()) {
             String fileName = generateName(String.valueOf(giftId), size);
-            s3Manager.save(fileName, bucket, fileResolutionConverter.convert(file, size));
+            s3Manager.save(fileName, bucket, pictureConverter.resize(file, size));
         }
     }
 }

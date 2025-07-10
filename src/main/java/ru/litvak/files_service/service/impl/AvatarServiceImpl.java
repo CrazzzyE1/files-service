@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.litvak.files_service.enumerated.SizeType;
 import ru.litvak.files_service.manager.AvatarManager;
+import ru.litvak.files_service.manager.PictureConverter;
 import ru.litvak.files_service.manager.S3Manager;
 import ru.litvak.files_service.mapper.AvatarMapper;
 import ru.litvak.files_service.model.dto.AvatarDto;
 import ru.litvak.files_service.service.AvatarService;
-import ru.litvak.files_service.service.FileResolutionConverter;
 import ru.litvak.files_service.util.JwtTokenMapper;
 
 import java.util.UUID;
@@ -33,7 +33,7 @@ public class AvatarServiceImpl implements AvatarService {
     private final AvatarManager avatarManager;
     private final S3Manager s3Manager;
     private final AvatarMapper avatarMapper;
-    private final FileResolutionConverter fileResolutionConverter;
+    private final PictureConverter pictureConverter;
 
     @Override
     public ResponseEntity<byte[]> loadAvatar(UUID userId, SizeType size) {
@@ -54,7 +54,7 @@ public class AvatarServiceImpl implements AvatarService {
         avatarManager.save(userId, file.getContentType());
         for (SizeType size : SizeType.values()) {
             String fileName = generateName(String.valueOf(userId), size);
-            s3Manager.save(fileName, bucket, fileResolutionConverter.convert(file, size));
+            s3Manager.save(fileName, bucket, pictureConverter.resize(file, size));
         }
     }
 

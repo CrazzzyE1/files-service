@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.litvak.files_service.enumerated.SizeType;
 import ru.litvak.files_service.service.PictureService;
 
+import static ru.litvak.files_service.util.FileValidatorUtil.validateContentType;
+
 @RestController
 @RequestMapping("/pictures")
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class PictureController {
     public void addPicture(@RequestHeader(value = "Authorization") String authHeader,
                            @RequestParam("giftId") String giftId,
                            @RequestParam("file") MultipartFile file) {
+        validateContentType(file.getContentType());
         pictureService.addPicture(authHeader, giftId, file);
     }
 }
