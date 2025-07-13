@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.litvak.files_service.enumerated.SizeType;
+import ru.litvak.files_service.integration.UserServiceFacade;
 import ru.litvak.files_service.manager.AvatarManager;
 import ru.litvak.files_service.manager.PictureConverter;
 import ru.litvak.files_service.manager.S3Manager;
@@ -29,22 +30,38 @@ public class AvatarServiceImpl implements AvatarService {
     private String bucket;
 
     private static final String DEFAULT_AVATAR_NAME = "default_avatar";
+    private static final String DELETE_USER_AVATAR_NAME = "delete_user_avatar";
 
     private final AvatarManager avatarManager;
     private final S3Manager s3Manager;
     private final AvatarMapper avatarMapper;
     private final PictureConverter pictureConverter;
+    private final UserServiceFacade userServiceFacade;
 
     @Override
     public ResponseEntity<byte[]> loadAvatar(UUID userId, SizeType size) {
         AvatarDto meta = avatarMapper.toDto(avatarManager.get(userId));
-        String fileName = meta != null ?
-                generateName(String.valueOf(userId), size) : generateName(DEFAULT_AVATAR_NAME, size);
+        boolean isUserActive = userServiceFacade.isUserActive(userId);
+        String fileName;
+
+        if (isUserActive) {
+            fileName = meta != null ?
+                    generateName(String.valueOf(userId), size) : generateName(DEFAULT_AVATAR_NAME, size);
+        } else {
+            fileName = generateName(DELETE_USER_AVATAR_NAME, size);
+        }
+
         String contentType = meta != null ? meta.getContentType() : DEFAULT_CONTENT_TYPE;
         byte[] data = s3Manager.get(fileName, bucket);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .body(data);
+    }
+
+    @Override
+    public ResponseEntity<byte[]> loadAvatar(String authHeader, SizeType size) {
+        UUID me = JwtTokenMapper.getUserId(authHeader);
+        return loadAvatar(me, size);
     }
 
     @Override
@@ -56,12 +73,6 @@ public class AvatarServiceImpl implements AvatarService {
             String fileName = generateName(String.valueOf(userId), size);
             s3Manager.save(fileName, bucket, pictureConverter.resize(file, size));
         }
-    }
-
-    @Override
-    public ResponseEntity<byte[]> loadAvatar(String authHeader, SizeType size) {
-        UUID me = JwtTokenMapper.getUserId(authHeader);
-        return loadAvatar(me, size);
     }
 
     @Override

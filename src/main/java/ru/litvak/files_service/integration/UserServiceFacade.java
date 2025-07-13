@@ -7,4 +7,6 @@ import java.util.UUID;
 public interface UserServiceFacade {
 
     RelationsDto getRelations(UUID me, UUID userId);
+
+    boolean isUserActive(UUID userId);
 }

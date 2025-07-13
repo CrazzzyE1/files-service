@@ -26,4 +26,13 @@ public class UserServiceFacadeImpl implements UserServiceFacade {
                 RelationsDto.class
         );
     }
+
+    @Override
+    public boolean isUserActive(UUID userId) {
+        return Boolean.TRUE.equals(restTemplate.getForObject(
+                "http://USER-SERVICE/api/v1/profiles/{id}/active",
+                Boolean.class,
+                userId
+        ));
+    }
 }
