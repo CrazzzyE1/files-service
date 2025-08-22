@@ -51,7 +51,7 @@ public class AccessManagerImpl implements AccessManager {
     }
 
     private boolean hasAccess(PrivacyLevel userPrivacy, PrivacyLevel wishListPrivacy, boolean isFriends) {
-        if (isPublic(userPrivacy) && isPublic(wishListPrivacy)) {
+        if (isPublic(userPrivacy) && (isPublic(wishListPrivacy) || wishListPrivacy == null)) {
             return true;
         }
 
