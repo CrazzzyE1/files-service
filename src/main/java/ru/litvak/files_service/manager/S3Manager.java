@@ -8,4 +8,6 @@ public interface S3Manager {
     byte[] get(String name, String bucket);
 
     void delete(String name, String bucket);
+
+    void clonePicture(String sourceName, String targetName, String bucket);
 }

@@ -17,6 +17,7 @@ import ru.litvak.files_service.manager.PictureManager;
 import ru.litvak.files_service.manager.S3Manager;
 import ru.litvak.files_service.mapper.PictureMapper;
 import ru.litvak.files_service.model.dto.PictureDto;
+import ru.litvak.files_service.model.request.ClonePictureRequest;
 import ru.litvak.files_service.service.PictureService;
 import ru.litvak.files_service.util.JwtTokenMapper;
 
@@ -91,5 +92,15 @@ public class PictureServiceImpl implements PictureService {
             s3Manager.delete(fileName, bucket);
         }
         pictureManager.delete(giftId);
+    }
+
+    @Override
+    public void clonePicture(ClonePictureRequest request) {
+        pictureManager.save(request.getId(), DEFAULT_CONTENT_TYPE, request.getNewId());
+        for (SizeType size : SizeType.values()) {
+            String source = generateName(String.valueOf(request.getGiftId()), size);
+            String target = generateName(String.valueOf(request.getNewId()), size);
+            s3Manager.clonePicture(source, target, bucket);
+        }
     }
 }

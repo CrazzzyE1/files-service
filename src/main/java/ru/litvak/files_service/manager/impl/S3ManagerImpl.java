@@ -59,6 +59,17 @@ public class S3ManagerImpl implements S3Manager {
         }
     }
 
+    @Override
+    public void clonePicture(String sourceName, String targetName, String bucket) {
+        try {
+            copyFileWithinBucket(sourceName, targetName, bucket);
+            log.debug("File cloned successfully: {} to {} in bucket {}", sourceName, targetName, bucket);
+        } catch (Exception e) {
+            log.error("File clone failed: source={}, target={}, bucket={}", sourceName, targetName, bucket, e);
+            throw new RuntimeException("File clone failed: %s to %s".formatted(sourceName, targetName), e);
+        }
+    }
+
     private void ensureBucketExists(String bucket) throws Exception {
         if (!existingBuckets.contains(bucket)) {
             synchronized (this) {
@@ -89,4 +100,18 @@ public class S3ManagerImpl implements S3Manager {
         );
         log.debug("File uploaded successfully: {} to bucket {}", name, bucket);
     }
+
+    private void copyFileWithinBucket(String sourceName, String targetName, String bucket) throws Exception {
+        minioClient.copyObject(
+                CopyObjectArgs.builder()
+                        .bucket(bucket)
+                        .object(targetName)
+                        .source(CopySource.builder()
+                                .bucket(bucket)
+                                .object(sourceName)
+                                .build())
+                        .build()
+        );
+    }
+
 }
