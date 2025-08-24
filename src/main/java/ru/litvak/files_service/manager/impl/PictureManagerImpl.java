@@ -50,4 +50,9 @@ public class PictureManagerImpl implements PictureManager {
     public void delete(String id) {
         pictureRepository.deleteByFileId(id);
     }
+
+    @Override
+    public boolean exist(String giftId) {
+        return pictureRepository.existsByFileId(giftId);
+    }
 }

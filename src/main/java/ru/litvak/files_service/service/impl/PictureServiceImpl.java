@@ -96,6 +96,9 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public void clonePicture(ClonePictureRequest request) {
+        if (!pictureManager.exist(request.getGiftId())) {
+         return;
+        }
         pictureManager.save(request.getId(), DEFAULT_CONTENT_TYPE, request.getNewId());
         for (SizeType size : SizeType.values()) {
             String source = generateName(String.valueOf(request.getGiftId()), size);

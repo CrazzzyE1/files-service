@@ -12,4 +12,6 @@ public interface PictureRepository extends JpaRepository<Picture, Long> {
     Optional<Picture> findByFileId(String id);
 
     void deleteByFileId(String id);
+
+    boolean existsByFileId(String id);
 }
