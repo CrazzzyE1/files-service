@@ -20,7 +20,7 @@ import java.util.Objects;
 public class PictureConverterImpl implements PictureConverter {
 
     @Override
-    public MultipartFile resize(MultipartFile originalFile, SizeType size) {
+    public MultipartFile resize(MultipartFile originalFile, SizeType size, boolean isAvatar) {
         try {
             Objects.requireNonNull(originalFile, "Original file cannot be null");
             Objects.requireNonNull(size, "Size type cannot be null");
@@ -35,7 +35,7 @@ public class PictureConverterImpl implements PictureConverter {
                 throw new IllegalArgumentException("Invalid image file");
             }
 
-            BufferedImage resizedImage = resizeImage(originalImage, size);
+            BufferedImage resizedImage = resizeImage(originalImage, size, isAvatar);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
 
             ImageIO.write(resizedImage, "jpeg", os);
@@ -89,24 +89,42 @@ public class PictureConverterImpl implements PictureConverter {
         }
     }
 
-    private BufferedImage resizeImage(BufferedImage originalImage, SizeType sizeType) {
+    private BufferedImage resizeImage(BufferedImage originalImage, SizeType sizeType, boolean isAvatar) {
         int targetWidth, targetHeight;
-
-        switch (sizeType) {
-            case SMALL -> {
-                targetWidth = 100;
-                targetHeight = 100;
+        if (isAvatar) {
+            switch (sizeType) {
+                case SMALL -> {
+                    targetWidth = 70;
+                    targetHeight = 70;
+                }
+                case MEDIUM -> {
+                    targetWidth = 100;
+                    targetHeight = 100;
+                }
+                case LARGE -> {
+                    targetWidth = 150;
+                    targetHeight = 150;
+                }
+                default -> throw new IllegalArgumentException("Unknown size type: " + sizeType);
             }
-            case MEDIUM -> {
-                targetWidth = 300;
-                targetHeight = 300;
+        } else {
+            switch (sizeType) {
+                case SMALL -> {
+                    targetWidth = 350;
+                    targetHeight = 350;
+                }
+                case MEDIUM -> {
+                    targetWidth = 500;
+                    targetHeight = 500;
+                }
+                case LARGE -> {
+                    targetWidth = 800;
+                    targetHeight = 800;
+                }
+                default -> throw new IllegalArgumentException("Unknown size type: " + sizeType);
             }
-            case LARGE -> {
-                targetWidth = 800;
-                targetHeight = 800;
-            }
-            default -> throw new IllegalArgumentException("Unknown size type: " + sizeType);
         }
+
 
         double aspectRatio = (double) originalImage.getWidth() / originalImage.getHeight();
         if (originalImage.getWidth() > originalImage.getHeight()) {

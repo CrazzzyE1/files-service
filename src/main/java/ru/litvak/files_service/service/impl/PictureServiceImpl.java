@@ -74,7 +74,7 @@ public class PictureServiceImpl implements PictureService {
         pictureManager.save(me, DEFAULT_CONTENT_TYPE, giftId);
         for (SizeType size : SizeType.values()) {
             String fileName = generateName(String.valueOf(giftId), size);
-            s3Manager.save(fileName, bucket, pictureConverter.resize(file, size));
+            s3Manager.save(fileName, bucket, pictureConverter.resize(file, size, false));
         }
     }
 
