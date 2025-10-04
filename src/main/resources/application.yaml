@@ -10,6 +10,10 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
   jackson:
     default-property-inclusion: NON_NULL
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 server:
   servlet:
     context-path: /api/v1
